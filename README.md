@@ -53,9 +53,62 @@ int main() {
     
     return 0;
 }
-
 ```
 
+Write a Arduino function that takes callback function and any number of optional parameters for them. Don't use templates.
+```c
+typedef void (*callback)(int, float); // Define callback function type
+
+// Function that takes a callback function and any number of optional parameters
+void myFunction(callback func, int param1, float param2)
+{
+  // Store the callback function and its parameters in a variable
+  // so that it can be called later
+  // Here, we are assuming that the callback function takes two parameters
+  callback myCallback = func;
+  int myParam1 = param1;
+  float myParam2 = param2;
+
+  // Call the callback function with the parameters
+  myCallback(myParam1, myParam2);
+}
+
+// Example usage:
+void myCallbackFunction(int param1, float param2)
+{
+  // Do something with the parameters
+  Serial.print("Parameter 1: ");
+  Serial.println(param1);
+  Serial.print("Parameter 2: ");
+  Serial.println(param2);
+}
+
+void setup()
+{
+  // Call myFunction with the callback function and its parameters
+  myFunction(myCallbackFunction, 42, 3.14);
+}
+
+void loop()
+{
+  // Do something
+}
+```
+Write a Qt C++ function that receives data from QBluetooth and stores it in QBitArray.
+Slot for  connect(Bluetooth::socket, &QBluetoothSocket::readyRead, this, &MainWindow::receiveReadings);
+```cpp
+void MainWindow::receiveReadings()
+{
+    QByteArray data = Bluetooth::socket->readAll();
+    QBitArray bits(data.count() * 8);
+    for (int i = 0; i < data.count(); ++i) {
+        for (int b = 0; b < 8; ++b) {
+            bits.setBit(i * 8 + b, data.at(i) & (1 << b));
+        }
+    }
+    // Use the 'bits' QBitArray as needed
+}
+```
 Make a HTML code for a website using CSS grid with three div levels:
 
 header
