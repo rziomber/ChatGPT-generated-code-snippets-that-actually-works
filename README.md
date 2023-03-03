@@ -109,6 +109,52 @@ void MainWindow::receiveReadings()
     // Use the 'bits' QBitArray as needed
 }
 ```
+Write a C++ class. Member function should take callback function and optional parametrs of any type for that callback. Store them in member variable, so they could be callback later.
+(own code)
+```cpp
+#include <iostream>
+#include <functional>
+
+//https://vittorioromeo.info/index/blog/passing_functions_to_functions.html
+class MyClass
+{
+public:
+  template < typename T = decltype ([]()constexpr{}), typename ... Types >
+  void addFunction (T g = {}, Types ... args)
+  {
+    callBack =[g, args ...] ()
+    {
+      (g) (args ...);
+    };
+  }
+
+  void run ()
+  {
+    callBack ();
+  }
+
+private:
+  std::function < void () > callBack;
+};
+
+void test ()
+{
+  std::cout << "Hello!\n";
+}
+
+void test2 (int r)
+{
+  std::cout << "Hello! " << r << "\n";
+}
+
+int main ()
+{
+  auto test3 = [](int r) { std::cout << "Hello " << r << "\n"; };
+  MyClass obj;
+  obj.addFunction (test3,6);
+  obj.run ();
+}
+```
 Make a HTML code for a website using CSS grid with three div levels:
 
 header
