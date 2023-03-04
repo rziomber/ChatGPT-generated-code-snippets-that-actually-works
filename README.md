@@ -57,36 +57,57 @@ int main() {
 
 Write a Arduino function that takes callback function and any number of optional parameters for them. Don't use templates.
 ```c
-typedef void (*callback)(int, float); // Define callback function type
+typedef void (*callback)(void *params[], int num_params); // Define callback function type
 
 // Function that takes a callback function and any number of optional parameters
-void myFunction(callback func, int param1, float param2)
+void myFunction(callback func, void *params[], int num_params)
 {
   // Store the callback function and its parameters in a variable
   // so that it can be called later
-  // Here, we are assuming that the callback function takes two parameters
   callback myCallback = func;
-  int myParam1 = param1;
-  float myParam2 = param2;
 
   // Call the callback function with the parameters
-  myCallback(myParam1, myParam2);
+  myCallback(params, num_params);
 }
 
 // Example usage:
-void myCallbackFunction(int param1, float param2)
+void myCallbackFunction(void *params[], int num_params)
 {
-  // Do something with the parameters
-  Serial.print("Parameter 1: ");
-  Serial.println(param1);
-  Serial.print("Parameter 2: ");
-  Serial.println(param2);
+  // Loop through the parameters and print them to the serial monitor
+  for (int i = 0; i < num_params; i++) {
+    if (params[i] != NULL) {
+      Serial.print("Parameter ");
+      Serial.print(i+1);
+      Serial.print(": ");
+      
+      // Handle different parameter types
+      if (sizeof(params[i]) == sizeof(int)) {
+        Serial.println(*((int *)params[i]));
+      } else if (sizeof(params[i]) == sizeof(float)) {
+        Serial.println(*((float *)params[i]));
+      } else if (sizeof(params[i]) == sizeof(double)) {
+        Serial.println(*((double *)params[i]));
+      } else if (sizeof(params[i]) == sizeof(char *)) {
+        Serial.println(*((char **)params[i]));
+      } else {
+        Serial.println("(unknown type)");
+      }
+    }
+  }
 }
 
 void setup()
 {
+  // Define parameters to pass to the callback function
+  int int_param = 42;
+  float float_param = 3.14;
+  char *string_param = "Hello world!";
+
+  // Create an array to hold the parameters
+  void *params[] = {&int_param, &float_param, &string_param};
+
   // Call myFunction with the callback function and its parameters
-  myFunction(myCallbackFunction, 42, 3.14);
+  myFunction(myCallbackFunction, params, 3);
 }
 
 void loop()
