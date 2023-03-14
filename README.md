@@ -55,7 +55,7 @@ int main() {
 }
 ```
 
-Write a Arduino function that takes callback function and any number of optional parameters for them. Don't use templates.
+Write an Arduino function that takes callback function and any number of optional parameters for them. Don't use templates.
 ```c
 typedef void (*callback)(void *params[], int num_params); // Define callback function type
 
