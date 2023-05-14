@@ -176,6 +176,28 @@ int main ()
   obj.run ();
 }
 ```
+Custom method to mix strings and variables for Arduino.
+```cpp
+template <typename C> void universal_print(C print_class) {}
+template <typename C, typename T, typename... Args>
+void universal_print(C print_class, T value, Args... args) {
+  print_class->print(value);
+  universal_print(print_class, args...);
+}
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  float temp = 12.3;
+  float hum = 23.4;
+  universal_print(&Serial,"temperature ", temp, " C\n");
+  universal_print(&Serial,"temperature ", temp, " C humidity ", hum, "%\n");
+  delay(1000);
+}
+```
+
 Make a HTML code for a website using CSS grid with three div levels:
 
 header
