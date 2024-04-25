@@ -218,6 +218,10 @@ int main() {
 
   obj.setCallback(andAnotherCallback);
   obj.invokeCallback();
+
+  //obj.setCallback(std::bind(anotherCallback, 10, 3.14, "world"));
+  //obj.setCallback([&]() { myFunction(param1, param2););
+
   return 0;
 }
 ```
