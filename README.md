@@ -184,6 +184,7 @@ class MyClass {
   public: template <typename Callback, typename...Args>
   void setCallback(Callback callback, Args && ...args) {
     callback_ = std::bind(callback, std::forward <Args> (args)...);
+    //callback_ = [callback, args...]() mutable {callback(args...);};
   }
 
   void invokeCallback() {
