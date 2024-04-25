@@ -176,6 +176,51 @@ int main ()
   obj.run ();
 }
 ```
+```cpp
+#include <functional>
+#include <iostream>
+
+class MyClass {
+  public: template <typename Callback, typename...Args>
+  void setCallback(Callback callback, Args && ...args) {
+    callback_ = std::bind(callback, std::forward <Args> (args)...);
+  }
+
+  void invokeCallback() {
+    if (callback_) {
+      callback_();
+    }
+  }
+
+  private: std::function <void()> callback_;
+};
+
+void callbackFunction(const std::string & message) {
+  std::cout << "Callback message: " << message << std::endl;
+}
+
+void anotherCallback(int a, double b, const char * c) {
+  std::cout << "Callback message: a = " << a << ", b = " << b << ", c = " << c << std::endl;
+}
+
+void andAnotherCallback() {
+  std::cout << "Callback without arguments" << std::endl;
+}
+
+int main() {
+  MyClass obj;
+  obj.setCallback(callbackFunction, "Hello from callback!");
+  obj.invokeCallback();
+
+  obj.setCallback(anotherCallback, 10, 3.14, "world");
+  obj.invokeCallback();
+
+  obj.setCallback(andAnotherCallback);
+  obj.invokeCallback();
+  return 0;
+}
+```
+
 Custom method to mix strings and variables for Arduino.
 ```cpp
 template <typename C> void universal_print(C print_class) {}
