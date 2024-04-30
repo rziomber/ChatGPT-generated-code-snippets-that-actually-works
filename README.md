@@ -226,6 +226,139 @@ int main() {
 }
 ```
 
+```cpp
+#if __has_include(<functional>)
+#include <functional>
+#endif
+void printString(String str, int i) {
+  Serial1.println(str);
+  Serial1.println(i);
+}
+
+void test() {
+  Serial1.println("test");
+}
+
+bool intervalFn(int &something) {
+  Serial1.print(millis());
+  Serial1.print("ms ");
+  Serial1.println(--something);
+  if (something > 0)
+    return 1; else return 0;
+}
+
+#if !__has_include(<functional>)
+template <typename Function, typename Parameter>
+#endif
+class OneTimeTimer
+{
+  public:
+#if __has_include(<functional>)
+    template <typename Function, typename... Parameters>
+    void setTask(unsigned int interval, Function _fn, Parameters&&... _par) {
+#else
+    void setTask(unsigned int interval, Function _fn, Parameter _par) {
+#endif
+      nextRun = millis() + interval;
+#if __has_include(<functional>)
+      callback = [_fn, _par...]() {
+        _fn(_par...);
+      };
+      //callback = std::bind(_fn, std::forward<Parameters>(_par)...);
+#else
+      callback = _fn;
+      par = _par;
+#endif
+    };
+    void run() {
+      if (callback && static_cast<long>(millis() - nextRun) >= 0) {
+#if __has_include(<functional>)
+        callback();
+#else
+        callback(par);
+#endif
+        callback = NULL;
+      }
+    };
+    unsigned long nextRun = 0;
+#if __has_include(<functional>)
+    std::function<void()> callback;
+#else
+    Function callback;
+    Parameter par;
+#endif
+};
+
+
+#if !__has_include(<functional>)
+template <typename Function, typename Parameter>
+#endif
+class IntervalTimer
+{
+  public:
+#if __has_include(<functional>)
+    template <typename Function, typename... Parameters>
+    void setTask(unsigned int _interval, Function _fn, Parameters&&... _par) {
+#else
+    void setTask(unsigned int _interval, Function _fn, Parameter _par) {
+#endif
+      nextRun = millis() + _interval;
+      interval = _interval;
+#if __has_include(<functional>)
+      callback = std::bind(_fn, std::forward<Parameters>(_par)...);
+#else
+      callback = _fn;
+      par = _par;
+#endif
+    };
+    void run() {
+      if (callback && static_cast<long>(millis() - nextRun) >= 0) {
+        bool result;
+#if __has_include(<functional>)
+        result = callback();
+#else
+        result = callback(par);
+#endif
+        if (result) nextRun += interval;
+        else callback = NULL;
+      }
+    };
+    unsigned long nextRun = 0;
+    unsigned long interval = 0;
+#if __has_include(<functional>)
+    std::function<bool()> callback;
+#else
+    Function callback;
+    Parameter par;
+#endif
+};
+
+OneTimeTimer
+#if !__has_include(<functional>)
+<decltype(&printString), String>
+#endif
+timer;
+
+IntervalTimer
+#if !__has_include(<functional>)
+<decltype(&intervalFn), int>
+#endif
+interval;
+
+void setup() {
+  Serial1.begin(115200);
+  timer.setTask(1000, printString, "aaa", 5);
+  int sm = 3;
+  interval.setTask(1500, intervalFn, sm);
+  //timer.setTask(1000, test);
+}
+
+void loop() {
+  timer.run();
+  interval.run();
+}
+```
+
 Custom method to mix strings and variables for Arduino.
 ```cpp
 template <typename C> void universal_print(C print_class) {}
