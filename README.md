@@ -380,6 +380,35 @@ void loop() {
   delay(1000);
 }
 ```
+```cpp
+template<typename PrinterClass>
+class UniversalPrint {
+  private:
+    PrinterClass& printer;
+
+  public:
+    UniversalPrint(PrinterClass& printer) : printer(printer) {}
+
+    template<typename... Args>
+    void print(Args... args) {
+      (printer.print(args), ...);
+    }
+
+    template<typename... Args>
+    void println(Args... args) {
+      print(args..., '\n');
+    }
+};
+
+UniversalPrint<decltype(Serial)> serialPrinter(Serial);
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  serialPrinter.println(millis(), " ms ", 9.8);
+}
+```
 
 Make a HTML code for a website using CSS grid with three div levels:
 
